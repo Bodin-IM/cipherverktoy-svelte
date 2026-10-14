@@ -6,6 +6,39 @@
 
     let errorElement = $state()
     let errorTextElement = $state()
+    let errorContainerElement = $state()
+
+
+    function isOnlyLetters(str="blue") {
+        var code, i, len;
+        let charCount = 0
+        
+        for (i = 0, len = str.length; i < len; i++) {
+            
+            str.char
+            code = str.charCodeAt(i) 
+            console.log(code)
+            console.log(charCount)
+            // går gjennom hvis det ikke er mellomrom
+            if (code != 32) {
+                charCount++
+                console.log(charCount)
+                // sjekk om bokstav ikke er i alfabet
+                if (!(code > 64 && code < 91) && // upper alpha (A-Z)
+                !(code > 96 && code < 123)) { // lower alpha (a-z)
+                    // hvis ikke i alfabet
+                    return false;
+                } 
+                
+            }
+        }
+        // returner false om det er tomt
+        if (charCount >= 1) {
+            return true;
+        } else {
+            return false;
+        }
+    };
 
     function encrypt(decrypt=false) {
         let key2
@@ -13,6 +46,11 @@
         resultPretty = ''
         if (key <= 0) {
             error("key not set or is negative value")
+            return
+        }
+        if (isOnlyLetters(text) == false) {
+            error("Text contains characters other than text (A-Z)")
+            return
         }
 
         if (decrypt == true) {
@@ -54,14 +92,21 @@
 
 
     function error(msg="this is a string") {
-        errorElement.style.display = "block"
-        errorTextElement.innerHTML = msg
+        errorContainerElement.style.display = "flex";
+        errorTextElement.innerHTML = msg;
+        resultPretty = "ERROR!";
+    }
+
+    function hideError() {
+        errorContainerElement.style.display = "none";
+        errorTextElement.innerHTML = "no error";
     }
 </script>
 
-<div id="popupContainer">
+<a bind:this={errorContainerElement} href="" onclick={hideError} id="popupContainer">
     <div bind:this={errorElement} id="popUpError"><h1>ERROR!</h1> <p bind:this={errorTextElement}>You fucking died, you stupid fucking chud <br>  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla a consectetur leo, eget convallis risus. Praesent augue lorem, eleifend a quam at, luctus auctor risus. Nullam quis dolor maximus, luctus dui et, laoreet nunc. Proin ac est mollis, dictum ex vel, aliquet nisi. In quis ipsum velit. Phasellus hendrerit efficitur eros, sed rutrum diam. Nunc auctor risus ut faucibus tincidunt.<br>Etiam eget libero eros. In fermentum lorem sem. Etiam maximus mauris ac sodales blandit. Donec vel molestie nisl. Donec congue sem sodales tellus consequat pretium. Phasellus aliquet mattis porttitor. Vivamus non blandit odio, et laoreet massa. Nullam nulla nibh, maximus a nunc at, lobortis ornare purus. Etiam porta consequat ante, quis auctor quam congue quis. Duis aliquam libero id odio ullamcorper fermentum. Nam consequat diam in justo ornare, vitae viverra tortor lacinia. </p></div>
-</div>
+    
+</a>
 
 <section>
     <input type="text" id="cipherInput" bind:value={text} placeholder="Tekst som skal krypteres"> <input bind:value={key} type="number" min=1 max=25> <button onclick={() => encrypt()}>Kryptere</button> <button onclick={() => encrypt(true)}>Dektryptere</button>
@@ -90,7 +135,7 @@
     }
 
     #popUpError {
-        display: none;
+        display: block;
         opacity: 85%;
         position: fixed;
         background-color: grey;
@@ -98,6 +143,7 @@
         padding: 1px;
         padding-left: 20px;
         pointer-events: none;
+        
 
         h1 {
             color: red;
@@ -117,6 +163,8 @@
         top: 0px;
         height: 100vh;
         width: 100vw;
-        pointer-events: none;
+        color: black;
+
+        
     }
 </style>
