@@ -8,6 +8,60 @@
     let errorTextElement = $state()
     let errorContainerElement = $state()
 
+    // Encryption //
+    
+    function encryptCaesar(decrypt=false) {
+        let key2
+        result = ''
+        resultPretty = ''
+        if (key <= 0) {
+            error("key not set or is negative value")
+            return
+        }
+        if (isOnlyLetters(text) == false) {
+            error("Text contains characters other than letters (A-Z)")
+            return
+        }
+        
+        if (decrypt == true) {
+            key2 = -key
+            resultPretty = "Dektryptert: "
+        } else {
+            key2 = key
+            resultPretty = 'Kryptert: '
+        }
+        
+        for (let i = 0; i < text.length; i++) {
+            
+            let char = text[i];
+            
+            // går gjennom store bokstaver
+            if (char >= 'A' && char <= 'Z') {
+                // caesar chiffer
+                let code = text.charCodeAt(i);
+                char = String.fromCharCode(((code - 65 + key2) % 26) + 65);
+            }
+            // går gjennom små bokstaver
+            else if (char >= 'a' && char <= 'z') {
+                // caesar chiffer
+                let code = text.charCodeAt(i);
+                char = String.fromCharCode(((code - 97 + key2) % 26) + 97);
+            }
+            // når æ dekrypterte 'z', ble det '`', dette fikser det! :D
+            char = char.replace("`", "z");
+            
+            // det andre forblir uendret
+            result += char;
+        }
+        // bedre visning
+        resultPretty += result;
+        
+        // trengs ikke egt
+        return result;
+    }
+
+    
+    // Number check
 
     function isOnlyLetters(str="blue") {
         var code, i, len;
@@ -15,7 +69,7 @@
         
         for (i = 0, len = str.length; i < len; i++) {
             
-            str.char
+            //str.char
             code = str.charCodeAt(i) 
             console.log(code)
             console.log(charCount)
@@ -32,63 +86,15 @@
                 
             }
         }
-        // returner false om det er tomt
+        // caller error om det er tomt
         if (charCount >= 1) {
             return true;
         } else {
-            return false;
+            error("du må ha bokstav")
         }
     };
 
-    function encrypt(decrypt=false) {
-        let key2
-        result = ''
-        resultPretty = ''
-        if (key <= 0) {
-            error("key not set or is negative value")
-            return
-        }
-        if (isOnlyLetters(text) == false) {
-            error("Text contains characters other than text (A-Z)")
-            return
-        }
-
-        if (decrypt == true) {
-            key2 = -key
-            resultPretty = "Dektryptert: "
-        } else {
-            key2 = key
-            resultPretty = 'Kryptert: '
-        }
-
-        for (let i = 0; i < text.length; i++) {
-            
-            let char = text[i];
-
-            // går gjennom store bokstaver
-            if (char >= 'A' && char <= 'Z') {
-                // caesar chiffer
-                let code = text.charCodeAt(i);
-                char = String.fromCharCode(((code - 65 + key2) % 26) + 65);
-            }
-            // går gjennom små bokstaver
-            else if (char >= 'a' && char <= 'z') {
-                // caesar chiffer
-                let code = text.charCodeAt(i);
-                char = String.fromCharCode(((code - 97 + key2) % 26) + 97);
-            }
-            // når æ dekrypterte 'z', ble det '`', dette fikser det! :D
-            char = char.replace("`", "z");
-
-            // det andre forblir uendret
-            result += char;
-        }
-        // bedre visning
-        resultPretty += result;
-
-        // trengs ikke egt
-        return result;
-    }
+    // Error messages //
 
 
     function error(msg="this is a string") {
@@ -103,13 +109,13 @@
     }
 </script>
 
-<a bind:this={errorContainerElement} href="" onclick={hideError} id="popupContainer">
+<a bind:this={errorContainerElement} href="?balls" onclick={hideError} id="popupContainer">
     <div bind:this={errorElement} id="popUpError"><h1>ERROR!</h1> <p bind:this={errorTextElement}>You fucking died, you stupid fucking chud <br>  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla a consectetur leo, eget convallis risus. Praesent augue lorem, eleifend a quam at, luctus auctor risus. Nullam quis dolor maximus, luctus dui et, laoreet nunc. Proin ac est mollis, dictum ex vel, aliquet nisi. In quis ipsum velit. Phasellus hendrerit efficitur eros, sed rutrum diam. Nunc auctor risus ut faucibus tincidunt.<br>Etiam eget libero eros. In fermentum lorem sem. Etiam maximus mauris ac sodales blandit. Donec vel molestie nisl. Donec congue sem sodales tellus consequat pretium. Phasellus aliquet mattis porttitor. Vivamus non blandit odio, et laoreet massa. Nullam nulla nibh, maximus a nunc at, lobortis ornare purus. Etiam porta consequat ante, quis auctor quam congue quis. Duis aliquam libero id odio ullamcorper fermentum. Nam consequat diam in justo ornare, vitae viverra tortor lacinia. </p></div>
     
 </a>
 
 <section>
-    <input type="text" id="cipherInput" bind:value={text} placeholder="Tekst som skal krypteres"> <input bind:value={key} type="number" min=1 max=25> <button onclick={() => encrypt()}>Kryptere</button> <button onclick={() => encrypt(true)}>Dektryptere</button>
+    <input type="text" id="cipherInput" bind:value={text} placeholder="Tekst som skal krypteres"> <input bind:value={key} type="number" min=1 max=25> <button onclick={() => encryptCaesar()}>Kryptere</button> <button onclick={() => encryptCaesar(true)}>Dektryptere</button>
 </section>
 
 <section>
@@ -142,6 +148,7 @@
         border-radius: 6px;
         padding: 1px;
         padding-left: 20px;
+        padding-right: 20px;
         pointer-events: none;
         
 
@@ -156,7 +163,7 @@
 
     #popupContainer {
         position: fixed;
-        display: flex;
+        display: none;
         justify-content: center;
         align-items: center;
         left: 0px;
