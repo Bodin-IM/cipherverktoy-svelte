@@ -1,8 +1,18 @@
 <script>
-    let text = $state("");
-    let key = $state(1);
+    let textCaesar = $state("");
+    let keyCaesar = $state(1);
+
+    let textVignere = $state("")
+    let keyVignere = $state("")
+
+    let cipherTypes = ["Caesar", "Vignere"]
+    let selectedCipher = $state(cipherTypes[0])
+
     let result = $state("");
     let resultPretty = $state("")
+
+    // lmfao
+    let alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
 
     let errorElement = $state()
     let errorTextElement = $state()
@@ -11,41 +21,41 @@
     // Encryption //
     
     function encryptCaesar(decrypt=false) {
-        let key2
+        let key
         result = ''
         resultPretty = ''
-        if (key <= 0) {
+        if (keyCaesar <= 0) {
             error("key not set or is negative value")
             return
         }
-        if (isOnlyLetters(text) == false) {
+        if (isOnlyLetters(textCaesar) == false) {
             error("Text contains characters other than letters (A-Z)")
             return
         }
         
         if (decrypt == true) {
-            key2 = -key
+            key = -keyCaesar
             resultPretty = "Dektryptert: "
         } else {
-            key2 = key
+            key = keyCaesar
             resultPretty = 'Kryptert: '
         }
         
-        for (let i = 0; i < text.length; i++) {
+        for (let i = 0; i < textCaesar.length; i++) {
             
-            let char = text[i];
+            let char = textCaesar[i];
             
             // går gjennom store bokstaver
             if (char >= 'A' && char <= 'Z') {
                 // caesar chiffer
-                let code = text.charCodeAt(i);
-                char = String.fromCharCode(((code - 65 + key2) % 26) + 65);
+                let code = textCaesar.charCodeAt(i);
+                char = String.fromCharCode(((code - 65 + key) % 26) + 65);
             }
             // går gjennom små bokstaver
             else if (char >= 'a' && char <= 'z') {
                 // caesar chiffer
-                let code = text.charCodeAt(i);
-                char = String.fromCharCode(((code - 97 + key2) % 26) + 97);
+                let code = textCaesar.charCodeAt(i);
+                char = String.fromCharCode(((code - 97 + key) % 26) + 97);
             }
             // når æ dekrypterte 'z', ble det '`', dette fikser det! :D
             char = char.replace("`", "z");
@@ -59,6 +69,20 @@
         // trengs ikke egt
         return result;
     }
+
+    // WIP
+    function encryptVignere() {
+        let text = textVignere
+        let key = keyVignere
+        
+        var s = new Array();
+	    for (var i = 0; i < key.length; i++) {
+		    s[i] = alphabet.indexOf(key.toUpperCase.charAt(i)) +1;
+	    }
+	    
+        resultPretty = "fuckin array: " + s.toString()
+    }
+
 
     
     // Number check
@@ -115,7 +139,17 @@
 </a>
 
 <section>
-    <input type="text" id="cipherInput" bind:value={text} placeholder="Tekst som skal krypteres"> <input bind:value={key} type="number" min=1 max=25> <button onclick={() => encryptCaesar()}>Kryptere</button> <button onclick={() => encryptCaesar(true)}>Dektryptere</button>
+    <select bind:value={selectedCipher}>
+        <option value={cipherTypes[0]}>{cipherTypes[0]}</option>
+        <option value={cipherTypes[1]}>{cipherTypes[1]}</option>
+    </select>
+    {#if selectedCipher == cipherTypes[0]}
+        <input type="text" id="cipherInput" bind:value={textCaesar} placeholder="Tekst som skal krypteres"> <input bind:value={keyCaesar} type="number" min=1 max=25> <button onclick={() => encryptCaesar()}>Kryptere</button> <button onclick={() => encryptCaesar(true)}>Dektryptere</button>
+    {:else if selectedCipher == cipherTypes[1]}
+        <input type="text" id="cipherInput" bind:value={textVignere} placeholder="Tekst som skal krypteres"> <input bind:value={keyVignere} type="text" placeholder="Key" style="width: 11%;"> <button onclick={() => encryptVignere()}>Kryptere</button> <button onclick={() => encryptVignere()}>Dektryptere</button>
+    {:else}
+        <p>ts not implemented yet lmfao</p>
+    {/if}
 </section>
 
 <section>
